@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+
+require 'snippet_highlight'
+
+cmdline_opts = Trollop::options do
+  banner <<-EOS
+  sniphigh - Highlight a snippet of code on the middle-mouse clipboard
+             for pasting as syntax highlighted HTML (with inline css styles)
+
+  Usage:
+   <<Select (highlight) code>>
+
+         sniphigh [-iblp] <snippet-type>
+
+   <<Middle-click mouse button to paste HTML>>
+
+  Use one of the following snippet types (e.g. sniphigh -i sql):
+  NB you can also use the special type "irb".
+     This formats ruby copied from irb/pry.
+  \t#{Rouge::Lexer.all.map {|l| [l.tag, l.aliases] }.sort.map {|l| [l.first, l.last].flatten.sort.uniq.map {|a| a.ljust(22)} }.flatten.each_slice(4).map {|a| a.join(" ") }.join("\n\t")}
+
+  Options:
+  EOS
+  opt :inline, "Wrap the output in <code> instead of <pre>.", :short => "-i"
+  opt :base16, "Use the base16 colour theme instead of the github theme.", :short => "-b"
+  opt :lineno, "Print line numbers. Not compatible with --inline.", :short => "-l"
+  opt :print, "Print the output to the commandline instead of copying to clipboard.", :short => "-p"
+  conflicts(:inline, :lineno)
+end
+
+snippet_type = ARGV.shift
+Trollop::die "please provide a snippet-type" if snippet_type.nil?
+Trollop::die "unknown snippet-type \"#{snippet_type}\"" unless 'irb' == snippet_type || Rouge::Lexer.find(snippet_type)
+
+
+sniphigh = SnippetHighlight::SnippetHighlight.new(snippet_type, cmdline_opts)
+
+res = sniphigh.input_from_clipboard
+abort res if res
+
+sniphigh.transform
+
+if cmdline_opts[:print]
+  STDOUT.puts sniphigh.formatted_output
+else
+  if res = sniphigh.replace_on_clipboard != 0
+    abort "Copy to clipboard failed. xclip returned status #{res.to_i}."
+  end
+end
+
