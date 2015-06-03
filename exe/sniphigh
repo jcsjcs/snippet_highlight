@@ -15,9 +15,10 @@ cmdline_opts = Trollop::options do
    <<Middle-click mouse button to paste HTML>>
 
   Use one of the following snippet types (e.g. sniphigh -i sql):
-  NB you can also use the special type "irb".
-     This formats ruby copied from irb/pry.
-  \t#{Rouge::Lexer.all.map {|l| [l.tag, l.aliases] }.sort.map {|l| [l.first, l.last].flatten.sort.uniq.map {|a| a.ljust(22)} }.flatten.each_slice(4).map {|a| a.join(" ") }.join("\n\t")}
+  NB. you can also use the special type "irb" which formats ruby code
+      copied from irb/pry.
+
+  \t#{Rouge::Lexer.all.map {|l| [l.tag, l.aliases] }.sort.map {|l| [l.first, l.last].flatten.sort.uniq.map {|a| a.ljust(16)} }.flatten.each_slice(4).map {|a| a.join(" ") }.join("\n\t")}
 
   Options:
   EOS
