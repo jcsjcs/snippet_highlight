@@ -60,7 +60,7 @@ module SnippetHighlight
     def transform
       is_irb = 'irb' == @format
       opts = {:css_class    => nil,
-              :inline_theme => @highlight_opts[:base16] ? 'base16' : 'github',
+              :inline_theme => @highlight_opts[:base16] ? Rouge::Themes::Base16.new : Rouge::Themes::Github.new,
               :line_numbers => @highlight_opts[:lineno]}
 
       if is_irb
@@ -75,7 +75,7 @@ module SnippetHighlight
 
     def make_irb_string(opts)
       opts[:wrap] = false
-      formatter   = Rouge::Formatters::HTML.new(opts)
+      formatter   = Rouge::Formatters::HTMLLegacy.new(opts)
       new         = []
 
       lexer = Rouge::Lexers::Ruby.new
@@ -90,7 +90,7 @@ module SnippetHighlight
 
     def make_formatted_string(opts)
       opts[:wrap] = false if @highlight_opts[:inline]
-      formatter = Rouge::Formatters::HTML.new(opts)
+      formatter = Rouge::Formatters::HTMLLegacy.new(opts)
       if @highlight_opts[:inline]
         tag_start = '<code>'
         tag_end = '</code>'

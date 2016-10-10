@@ -12,8 +12,8 @@ class TestSnippetHighlight < Minitest::Test
 
   def test_it_transforms
     test_str  = 'SELECT * FROM users;'
-    opts      = {:css_class    => nil, :inline_theme => 'github'}
-    formatter = Rouge::Formatters::HTML.new(opts)
+    opts      = {:css_class    => nil, :inline_theme => Rouge::Themes::Github.new}
+    formatter = Rouge::Formatters::HTMLLegacy.new(opts)
     lexer     = Rouge::Lexers::SQL.new
     expect    = formatter.format(lexer.lex(test_str))
     sniphigh  = SnippetHighlight::SnippetHighlight.new('sql')
